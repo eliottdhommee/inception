@@ -1,4 +1,10 @@
 FROM alpine:3.4
 
 RUN apk update && apk upgrade
-RUN apk add mariadb
+RUN apk add --no-cache mariadb mariadb-client
+
+COPY tools/run.sh /script/run.sh
+
+RUN chmod 755 /script/run.sh
+
+ENTRYPOINT ["sh", "/script/run.sh"]

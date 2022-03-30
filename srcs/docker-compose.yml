@@ -1,22 +1,23 @@
 version: '3'
 
 services:
-  db:
-    image: mysql:8.0
-    container_name: db
+  maridb:
+    build: requirements/mariadb/
+    container_name: mariadb
     restart: unless-stopped
+    ports:
+      - "3306:3306"
     env_file: .env
     environment:
       - MYSQL_DATABASE=wordpress
     volumes:
       - dbdata:/var/lib/mysql
-    command: '--default-authentication-plugin=mysql_native_password'
     networks:
       - app-network
 
   wordpress:
     depends_on:
-      - db
+      - mariadb
     image: wordpress:5.1.1-fpm-alpine
     container_name: wordpress
     restart: unless-stopped
@@ -31,11 +32,11 @@ services:
     networks:
       - app-network
 
-  webserver:
+  nginx:
     depends_on:
       - wordpress
     build: requirements/nginx/
-    container_name: webserver
+    container_name: nginx
     restart: unless-stopped
     ports:
       - "443:443"
